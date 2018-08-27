@@ -144,6 +144,11 @@ Please compile the benchmark in debug mode (-c dbg), with no optimizations,
 and force static linking (--linkopt=-static).
 
 ```
+$ cd platform_benchmarks
+
+$ ls
+README.md  third_party  WORKSPACE
+
 $ CC=/usr/bin/clang blaze build --linkopt=-static -c dbg //third_party/platform_benchmarks/cputest:cputest
 ```
 
