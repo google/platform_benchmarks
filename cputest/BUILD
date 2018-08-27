@@ -1,4 +1,5 @@
 # security: disable=cc-static-no-pie
+licenses(["notice"])  # Apache 2.0
 
 cc_library(
     name = "alu",
