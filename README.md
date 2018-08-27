@@ -154,57 +154,9 @@ vendor, then there is a strong likelihood that the test is correct/robust. While
 modifying a test, it is good practice to check the result against the existing
 MPM. There are two shell scripts that help you do that...
 
-#### test.sh
-
-Runs on the host machine. Copies CPUtest executable from bazel-bin directory,
-copies test-on-target.sh to target machine and runs it.
 
 ```
-Usage: test.sh <target machine> <cputest arguments>
-```
-
-#### test-on-target.sh
-
-Runs on target machine. Fetches latest cputest MPM, runs it and the copied over
-executable for the cputest arguments passed in.
-
-TIP: Remember to build cputest for the correct architecture before running test.sh on a particular target machine.
-
-Example.
-
-```
-$ bazel build --cpu=ppc --compiler=gcc -c dbg cputest
-$ test.sh jktt88 "--max_scalar_store_ipc"
-test-on-target.sh                                                                                                                                                                                                                                       100%  193     0.2KB/s   00:00
-cputest                                                                                                                                                                                                                                                 100%   14MB  13.6MB/s   00:01
-Fetched package platforms/benchmarks/microbenchmarks/cputest version latest.
-/data/{{USERNAME}}/mpmtest
-mpm/cputest
-max_scalar_store_ipc	resulthash=1048576	GOPS=3.422395
-
-new
-max_scalar_store_ipc	resulthash=1048576	GOPS=3.424247
-
-$
-```
-
-In this case, the local version and the MPM version produce virtually the same
-result. Sometimes test result differences can be intentional. Correctness is for
-the test writer to ascertain depending on the context.
-
-## How do I run a test?
-Fetch the [MPM](https://mpmbrowse.corp.google.com/packageinfoz?package=platforms/benchmarks/microbenchmarks/cputest) like this on the target machine
-
-```
-$ cd /data/{{USERNAME}}
-$ mpm fetch -a platforms/benchmarks/microbenchmarks/cputest cputest
-```
-You can simply run it as follows (to measure ALU latency) ...
-
-```
-$ cd /data/{{USERNAME}}/cputest
 $ ./cputest --dostuff1
-
 ```
 ### Thread and numa node binding
 Often, to run a test reliably, you need to bind it to a particular logical thread using taskset or numactl. Otherwise the scheduler might migrate your test to a differnet hardware thread unexpectedly, causing your result to become suspect.
@@ -219,18 +171,7 @@ $ taskset -c 16 ./cputest --dostuff1
 #### Using numactl
 numactl is a third party utility that lets you bind a task to not just a thread (or a combination thereof), but also a particular memory node. This is useful for tests that exercise the memory subsystem (eg: measuring memory bandwidth)
 
-numactl is available as a multi-arch [MPM](https://mpmbrowse.corp.google.com/packageinfoz?package=third_party%2Flibnuma%2Fnumactl)
-
-On the target machine, fetch the mpm as follows ...
-
-```
-$ cd /data/{{USERNAME}}
-$ mpm fetch -a third_party/libnuma/numactl numactl
-
-
-```
 To bind the cputest run to logical core 16 and numa node 0 do....
-(assuming you fetched the cputest mpm as described before)
 
 ```
 $ numactl/numactl -C 16 -m 0 cputest/cputest --dostuff1
