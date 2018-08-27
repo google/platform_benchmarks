@@ -143,6 +143,11 @@ several minutes with LLVM.
 Please compile the benchmark in debug mode (-c dbg), with no optimizations,
 and force static linking (--linkopt=-static).
 
+```
+$ CC=/usr/bin/clang blaze build --linkopt=-static -c dbg cputest
+```
+
+
 ### Testing the test
 
 Using traditional unit testing techniques for CPUtest can catch cerebral
