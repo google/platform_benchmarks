@@ -149,7 +149,7 @@ $ cd platform_benchmarks
 $ ls
 README.md  third_party  WORKSPACE
 
-$ CC=/usr/bin/clang blaze build --linkopt=-static -c dbg //third_party/platform_benchmarks/cputest:cputest
+$ CC=/usr/bin/clang bazel build --linkopt=-static -c dbg //third_party/platform_benchmarks/cputest:cputest
 ```
 
 
