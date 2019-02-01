@@ -35,9 +35,9 @@
        [pointer]"+r"(ptr), [startpointer]"+r"(startptr)                  \
       :[readlocation]"r"(readloc)                                        \
       :"cc");
-#endif
 
-#ifdef __PPC64__
+#elif defined(__ppc64__)
+
 #define STLF_LOOP_CHASE(loopcnt, depth, readloc, startptr, ptr, loadreg) \
   for (; loopcnt > 0; loopcnt--) {                                       \
     ptr = startptr;                                                      \
@@ -45,9 +45,9 @@
     *((uint64_t *)ptr) = loopcnt;                                        \
     loadreg += *((uint64_t *)readloc);                                   \
   }
-#endif
 
-#ifdef __aarch64__
+#elif defined(__aarch64__)
+
 #define STLF_LOOP_CHASE(loopcnt, depth, readloc, startptr, ptr, loadreg) \
   for (; loopcnt > 0; loopcnt--) {                                       \
     ptr = startptr;                                                      \

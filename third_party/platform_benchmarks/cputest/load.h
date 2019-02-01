@@ -45,9 +45,9 @@
 #define SCALAR_LOAD_WIDTH 8
 #define VECTOR_LOAD_WIDTH 32
 
-#endif
 
-#ifdef __PPC64__
+#elif defined(__ppc64__)
+
 // Need to specify destination explicitly
 // Otherwise assembler sets up a pointer chase
 #define SCALAR_LOADS(x, m)    asm(x("ld %%r4, %0;")  \
@@ -63,9 +63,9 @@
 
 #define SCALAR_LOAD_WIDTH 8
 #define VECTOR_LOAD_WIDTH 16
-#endif
 
-#ifdef __aarch64__
+#elif defined(__aarch64__)
+
 #define SCALAR_LOADS(x, m) \
   asm(x("ldr x4, %0\n\t") \
       :: "m"(*m)          \

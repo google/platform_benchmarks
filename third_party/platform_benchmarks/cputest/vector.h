@@ -36,14 +36,14 @@
         "vpaddd %%ymm7, %%ymm15, %%ymm15\n\t")         \
         :::"cc", "%ymm8", "%ymm9", "%ymm10", "%ymm11", \
          "%ymm12", "%ymm13", "%ymm14", "%ymm15");
-#endif
 
-#ifdef __PPC64__
+#elif defined(__ppc64__)
+
 #define DEPENDENT_VECTOR256_INT_ADDS(x) abort();
 #define DEPENDENT_VECTOR256_INT_ADD_SETS(x) abort();
-#endif
 
-#ifdef __aarch64__
+#elif defined(__aarch64__)
+
 #define DEPENDENT_VECTOR256_INT_ADDS(x) abort();
 #define DEPENDENT_VECTOR256_INT_ADD_SETS(x) abort();
 #endif

@@ -659,9 +659,8 @@ struct Result max_vector_memops_at_footprint(const unsigned load, const unsigned
   result.resulthash = outerloopcount;
   strcpy(result.metricname, load? "Billion_32_byte_loads_per_sec" : "Billion_32_byte_stores_per_sec");
   result.metric = (double)outerloopcount*(1<<(logbytes-5))/(now_nsec()-t);
-#endif
 
-#ifdef __PPC64__
+#elif defined(__ppc64__)
 
   // PPC can do 16-bytes per load. To cover bytes you need...
   // bytes / 16 = bytes >> 4 = (1 << (logbytes - 4)) loads
@@ -703,9 +702,9 @@ struct Result max_vector_memops_at_footprint(const unsigned load, const unsigned
   result.metric = (double)outerloopcount*(1<<(logbytes-4))/(now_nsec()-t);
   result.resulthash = outerloopcount;
   strcpy(result.metricname, load? "Billion_16_byte_loads_per_sec" : "Billion_16_byte_stores_per_sec");
-#endif
 
-#ifdef __aarch64__
+#elif defined(__aarch64__)
+
   // ARM can do 16-bytes per load. To cover bytes you need...
   // bytes / 16 = bytes >> 4 = (1 << (logbytes - 4)) loads
 

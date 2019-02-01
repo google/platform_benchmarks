@@ -70,10 +70,8 @@
       :: "cc");                                         \
 
 
-#endif
+#elif defined(__ppc64__)
 
-
-#ifdef __PPC64__
 #define DEPENDENT_ADDS(x, r)   asm(x("addi %0, %0, 15\n\t") \
                                    :"+r"(r)             \
                                    ::"cc");
@@ -98,9 +96,8 @@
 #define MOV_ELIMINATION_SINGLE(a1, a2, count) abort();  // unimplemented
 #define MOV_ELIMINATION_1K(a1, a2, count) abort();  // unimplemented
 
-#endif
+#elif defined(__aarch64__)
 
-#ifdef __aarch64__
 #define DEPENDENT_ADDS(x, r)   asm(x("add %0, %0, 15\n\t") \
                                    :"+r"(r)             \
                                    ::"cc");

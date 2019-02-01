@@ -147,10 +147,8 @@
       :[mask]"r"(m)                                                  \
       : "cc");
 
+#elif defined(__ppc64__)
 
-#endif
-
-#ifdef __PPC64__
 #define TAKEN_BRANCH_LOOP(loop_count)                              \
   asm("mtctr %[loop_count]\n\t"                                    \
       "loop_start_takenbranch:\n\t"                                \
@@ -179,9 +177,9 @@
 #define UNCOND_DIRECT_BRANCHES(callsite, lc, m, x) abort();  // !implemented
 #define COND_BRANCHES(callsite, lc, m, x) abort();  // !implemented
 
-#endif
 
-#ifdef __aarch64__
+#elif defined(__aarch64__)
+
 #define TAKEN_BRANCH_LOOP(loop_count) \
   asm("loop_start_takenbranch:\n\t"                                     \
       "sub %0, %0, 1\n\t"                                               \

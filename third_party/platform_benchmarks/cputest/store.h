@@ -44,9 +44,8 @@
 #define SCALAR_STORE_WIDTH 8
 #define VECTOR_STORE_WIDTH 32
 
-#endif
+#elif defined(__ppc64__)
 
-#ifdef __PPC64__
 // Need to specify destination explicitly
 // Otherwise assembler sets up a pointer chase
 #define SCALAR_STORES(x, m)    asm(x("std %%r4, %0;")  \
@@ -62,9 +61,9 @@
 
 #define SCALAR_STORE_WIDTH 8
 #define VECTOR_STORE_WIDTH 16
-#endif
 
-#ifdef __aarch64__
+#elif defined(__aarch64__)
+
 #define SCALAR_STORES(x, m) \
   asm(x("str x4, %0\n\t") \
       : "=m"(*m)          \
