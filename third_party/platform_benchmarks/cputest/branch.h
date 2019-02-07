@@ -22,52 +22,52 @@
 #define RAND_SEED 1220
 
 // Macros work exactly for a single instantiation because of global labels
-
-#define BRANCH_SWEEP(BRANCHTYPE, logs, lc, m)     \
-  if (logs > 16)				  \
-      assert(logs <= 16); 			  \
-    if(logs == 0)          				  \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP0, lc, m, x1) \
-    if(logs == 1)          				  \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP1, lc, m, x2) \
-    if(logs == 2)          				  \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP2, lc, m, x4) \
-    if(logs == 3)          				  \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP3, lc, m, x8) \
-    if (logs == 4) \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP4, lc, m, x16) \
-    if (logs == 5) \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP5, lc, m, x32) \
-    if (logs == 6) \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP6, lc, m, x64) \
-    if (logs == 7) \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP7, lc, m, x128) \
-    if (logs == 8) \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP8, lc, m, x256) \
-    if (logs == 9) \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP9, lc, m, x512) \
-    if (logs == 10) \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP10, lc, m, x1k) \
-    if (logs == 11) \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP11, lc, m, x2k) \
-    if (logs == 12) \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP12, lc, m, x4k) \
-    if (logs == 13) \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP13, lc, m, x8k) \
-    if (logs == 14) \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP14, lc, m, x16k) \
-    if (logs == 15) \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP15, lc, m, x32k) \
-    if (logs == 16) \
-      BRANCHTYPE(BRANCHTYPE ## SWEEP16, lc, m, x64k) 
+// We choose to use chained if statements instead of switch to avoid some
+// assemblers complaining out-our-range conditional brarnches.
+#define BRANCH_SWEEP(BRANCHTYPE, logs, lc, m)         \
+  assert(logs <= 16);                                 \
+  if(logs == 0) {                                     \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP0, lc, m, x1); }    \
+  else if(logs == 1) {                                \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP1, lc, m, x2); }    \
+  else if(logs == 2) {                                \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP2, lc, m, x4); }    \
+  else if(logs == 3) {                                \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP3, lc, m, x8); }    \
+  else if (logs == 4) {                               \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP4, lc, m, x16); }   \
+  else if (logs == 5) {                               \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP5, lc, m, x32); }   \
+  else if (logs == 6) {                               \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP6, lc, m, x64); }   \
+  else if (logs == 7) {                               \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP7, lc, m, x128); }  \
+  else if (logs == 8) {                               \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP8, lc, m, x256); }  \
+  else if (logs == 9) {                               \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP9, lc, m, x512); }  \
+  else if (logs == 10) {                              \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP10, lc, m, x1k); }  \
+  else if (logs == 11) {                              \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP11, lc, m, x2k); }  \
+  else if (logs == 12) {                              \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP12, lc, m, x4k); }  \
+  else if (logs == 13) {                              \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP13, lc, m, x8k); }  \
+  else if (logs == 14) {                              \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP14, lc, m, x16k); } \
+  else if (logs == 15) {                              \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP15, lc, m, x32k); } \
+  else if (logs == 16) {                              \
+    BRANCHTYPE(BRANCHTYPE ## SWEEP16, lc, m, x64k);}
 
 #if defined(__x86_64__)
 
-#define TAKEN_BRANCH_LOOP(loop_count)     asm(".align 32\n" \
+#define TAKEN_BRANCH_LOOP(loop_count)     asm(".align 32\n"                 \
                                               "loop_start_takenbranch:\n\t" \
-                                              "dec %0\n\t" \
-                                              "jnz loop_start_takenbranch" \
-                                              : "+r"(loop_count) \
+                                              "dec %0\n\t"                  \
+                                              "jnz loop_start_takenbranch"  \
+                                              : "+r"(loop_count)            \
                                               :: "cc");
 
 
@@ -95,38 +95,38 @@
       :: "cc");
 
 
-#define BRANCH_HISTORY(lc, idx, dm, m, result)         \
-  asm("loop_start_branch_history:\n\t" \
-      "mov %[loop_count], %[index]\n\t"  \
-      "and %[depth_mask], %[index]\n\t"  \
-      "cmpq $0, (%[mem],%[index],8)\n\t" \
-      "jnz branch_history_there\n\t"     \
-      "add %[loop_count], %[x]\n\t"     \
-      "branch_history_there:\n\t"        \
-      "dec %[loop_count]\n\t"            \
-      "jnz loop_start_branch_history\n" \
-      :[loop_count]"+r"(lc), [index]"+r"(idx), [x]"+r"(result)  \
-      :[mem]"r"(m), [depth_mask]"r"(dm)  \
+#define BRANCH_HISTORY(lc, idx, dm, m, result)                 \
+  asm("loop_start_branch_history:\n\t"                         \
+      "mov %[loop_count], %[index]\n\t"                        \
+      "and %[depth_mask], %[index]\n\t"                        \
+      "cmpq $0, (%[mem],%[index],8)\n\t"                       \
+      "jnz branch_history_there\n\t"                           \
+      "add %[loop_count], %[x]\n\t"                            \
+      "branch_history_there:\n\t"                              \
+      "dec %[loop_count]\n\t"                                  \
+      "jnz loop_start_branch_history\n"                        \
+      :[loop_count]"+r"(lc), [index]"+r"(idx), [x]"+r"(result) \
+      :[mem]"r"(m), [depth_mask]"r"(dm)                        \
       : "cc");
 
-#define UNCOND_DIRECT_BRANCHES(callsite, lc, m, x)                   \
-  asm(".align 4096\n\t"                                              \
-      "start_loop_"#callsite":\n\t"                                  \
-      x("1: jmp 1f\n\tnop\n\t")                                      \
-      "1: dec %[loop_count]\n\t"                                     \
-      "jnz start_loop_"#callsite                                     \
-      :[loop_count]"+r"(lc)                                          \
+#define UNCOND_DIRECT_BRANCHES(callsite, lc, m, x) \
+  asm(".align 4096\n\t"                            \
+      "start_loop_"#callsite":\n\t"                \
+      x("1: jmp 1f\n\tnop\n\t")                    \
+      "1: dec %[loop_count]\n\t"                   \
+      "jnz start_loop_"#callsite                   \
+      :[loop_count]"+r"(lc)                        \
       :: "cc");
 
-#define COND_BRANCHES(callsite, lc, m, x)                            \
-  asm(".align 4096\n\t"                                              \
-      "start_loop_"#callsite":\n\t"                                  \
-      "test %[mask], %[loop_count]\n\t"                              \
-      x("1: jz 1f\n\tnop\n\t")                                       \
-      "1: dec %[loop_count]\n\t"                                     \
-      "jnz start_loop_"#callsite                                     \
-      :[loop_count]"+r"(lc)                                          \
-      :[mask]"r"(m)                                                  \
+#define COND_BRANCHES(callsite, lc, m, x) \
+  asm(".align 4096\n\t"                   \
+      "start_loop_"#callsite":\n\t"       \
+      "test %[mask], %[loop_count]\n\t"   \
+      x("1: jz 1f\n\tnop\n\t")            \
+      "1: dec %[loop_count]\n\t"          \
+      "jnz start_loop_"#callsite          \
+      :[loop_count]"+r"(lc)               \
+      :[mask]"r"(m)                       \
       : "cc");
 
 #elif defined(__ppc64__)
@@ -137,7 +137,7 @@
       "bdnz loop_start_takenbranch" ::[loop_count] "r"(loop_count) \
       : "cc", "ctr");
 
-#define REG_INDIRECT_BRANCH_LOOP(lc, tb, sr, mr, er) assert(0);  // !implemented
+#define REG_INDIRECT_BRANCH_LOOP(lc, tb, sr, mr, er) assert(0);  // PPC TBA
 
 #define BRANCH_HISTORY(lc, idx, dm, m, result)                     \
   asm("mtctr %[loop_count]\n\t"                                    \
@@ -156,8 +156,8 @@
       : [mem] "r"(m), [depth_mask] "r"(dm)                         \
       : "%r15", "cc", "ctr");
 
-#define UNCOND_DIRECT_BRANCHES(callsite, lc, m, x) abort();  // !implemented ppc
-#define COND_BRANCHES(callsite, lc, m, x) abort();  // !implemented ppc
+#define UNCOND_DIRECT_BRANCHES(callsite, lc, m, x) abort();  // PPC TBA
+#define COND_BRANCHES(callsite, lc, m, x) abort();  // PPC TBA
 
 #elif defined(__aarch64__)
 
@@ -168,27 +168,27 @@
       : "+r"(loop_count)                                             \
       :: "cc");
 
-#define REG_INDIRECT_BRANCH_LOOP(lc, tb, sr, mr, er)                 \
-  asm(".balign 32\n\t"                                               \
+#define REG_INDIRECT_BRANCH_LOOP(lc, tb, sr, mr, er)                \
+  asm(".balign 32\n\t"                                              \
       "adr %[startreg], loop_start_indirectbranch\n\t"              \
       "adr %[midreg], loop_mid_indirectbranch\n\t"                  \
       "adr %[exitreg], loop_exit_indirectbranch\n\t"                \
-      "loop_start_indirectbranch:\n\t"                               \
-      "nop\n\t"                                                      \
-      "loop_mid_indirectbranch:\n\t"                                 \
-      "mov %[target_branch], %[startreg]\n\t"                        \
-      "tst %[loop_count], #1\n\t"                                    \
-      "csel %[target_branch], %[target_branch], %[midreg], EQ\n\t"   \
-      "subs %[loop_count], %[loop_count], #1\n\t"                    \
-      "csel %[target_branch], %[target_branch], %[exitreg], NE\n\t"  \
-      "br %[target_branch]\n\t"                                      \
-      "loop_exit_indirectbranch:\n\t"                                \
-      "nop"                                                          \
-      : [loop_count]"+r"(lc),                                        \
-        [target_branch]"+r"(tb),                                     \
-        [startreg]"+r"(sr),                                          \
-        [midreg]"+r"(mr),                                            \
-        [exitreg]"+r"(er)                                            \
+      "loop_start_indirectbranch:\n\t"                              \
+      "nop\n\t"                                                     \
+      "loop_mid_indirectbranch:\n\t"                                \
+      "mov %[target_branch], %[startreg]\n\t"                       \
+      "tst %[loop_count], #1\n\t"                                   \
+      "csel %[target_branch], %[target_branch], %[midreg], EQ\n\t"  \
+      "subs %[loop_count], %[loop_count], #1\n\t"                   \
+      "csel %[target_branch], %[target_branch], %[exitreg], NE\n\t" \
+      "br %[target_branch]\n\t"                                     \
+      "loop_exit_indirectbranch:\n\t"                               \
+      "nop"                                                         \
+      : [loop_count]"+r"(lc),                                       \
+        [target_branch]"+r"(tb),                                    \
+        [startreg]"+r"(sr),                                         \
+        [midreg]"+r"(mr),                                           \
+        [exitreg]"+r"(er)                                           \
       :: "cc");
 
 #define BRANCH_HISTORY(lc, idx, dm, m, result)                 \
@@ -217,15 +217,15 @@
       :[loop_count]"+r"(lc)                                    \
       :: "cc");
 
-#define COND_BRANCHES(callsite, lc, m, x)                      \
-  asm(".balign 4096\n\t"                                       \
-      "start_loop_"#callsite":\n\t"                            \
-      "tst %[mask], %[loop_count]\n\t"                         \
-      x("1: beq 1f\n\tnop\n\t")                                \
-      "1: subs %[loop_count], %[loop_count], #1\n\t"           \
-      "bne start_loop_"#callsite                               \
-      :[loop_count]"+r"(lc)                                    \
-      :[mask]"r"(m)                                            \
+#define COND_BRANCHES(callsite, lc, m, x)            \
+  asm(".balign 4096\n\t"                             \
+      "start_loop_"#callsite":\n\t"                  \
+      "tst %[mask], %[loop_count]\n\t"               \
+      x("1: beq 1f\n\tnop\n\t")                      \
+      "1: subs %[loop_count], %[loop_count], #1\n\t" \
+      "bne start_loop_"#callsite                     \
+      :[loop_count]"+r"(lc)                          \
+      :[mask]"r"(m)                                  \
       : "cc");
 
 #endif

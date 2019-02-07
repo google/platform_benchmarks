@@ -25,12 +25,12 @@
 
 // Need to specify destination explicitly
 // Otherwise assembler sets up a pointer chase
-#define SCALAR_LOADS(x, m)    asm(x("mov %0, %%rdx;")   \
-                                  :: "m"(*m)            \
+#define SCALAR_LOADS(x, m)    asm(x("mov %0, %%rdx;") \
+                                  :: "m"(*m)          \
                                   : "%rdx");
 
 #define VECTOR_LOADS(x, m)    asm(x("vmovapd %0, %%ymm0;") \
-                                  :: "m"(*m) \
+                                  :: "m"(*m)               \
                                   : "%ymm0");
 
 #define VECTORLOADx86(offset, index, ymmreg) \
@@ -50,8 +50,8 @@
 
 // Need to specify destination explicitly
 // Otherwise assembler sets up a pointer chase
-#define SCALAR_LOADS(x, m)    asm(x("ld %%r4, %0;")  \
-                                  :: "m"(*m)         \
+#define SCALAR_LOADS(x, m)    asm(x("ld %%r4, %0;") \
+                                  :: "m"(*m)        \
                                   : "%r4");
 
 #define VECTOR_LOADS(x, m)    asm("li %%r3, 0;\n\t"            \
@@ -71,11 +71,11 @@
       :: "m"(*m)           \
       : "%x4");
 
-#define VECTOR_LOADS(x, m)   asm(x("ld1 {v0.16b}, %0\n\t")  \
-                                 ::"m"(*m)                  \
+#define VECTOR_LOADS(x, m)   asm(x("ld1 {v0.16b}, %0\n\t") \
+                                 ::"m"(*m)                 \
                                  : "cc");
 
-#define VECTORLOADarm(index, post_index, vectorreg)         \
+#define VECTORLOADarm(index, post_index, vectorreg) \
   "ld1 {"#vectorreg".16b}, [%["#index"]], %[post_index]\n\t"
 
 #define SCALAR_LOAD_WIDTH 8

@@ -24,12 +24,12 @@
 #if defined(__x86_64__)
 // Need to specify destination explicitly
 // Otherwise assembler sets up a pointer chase
-#define SCALAR_STORES(x, m)    asm(x("mov %%rdx, %0;")   \
-                                   : "=m"(*m)             \
+#define SCALAR_STORES(x, m)    asm(x("mov %%rdx, %0;") \
+                                   : "=m"(*m)          \
                                    :: );
 
 #define VECTOR_STORES(x, m)    asm(x("vmovapd %%ymm0, %0;") \
-                                   : "=m"(*m)                \
+                                   : "=m"(*m)               \
                                    :: );
 
 #define VECTORSTOREx86(offset, index, ymmreg) \
@@ -47,11 +47,11 @@
 #elif defined(__ppc64__)
 // Need to specify destination explicitly
 // Otherwise assembler sets up a pointer chase
-#define SCALAR_STORES(x, m)    asm(x("std %%r4, %0;")  \
-                                   : "=m"(*m) \
+#define SCALAR_STORES(x, m)    asm(x("std %%r4, %0;") \
+                                   : "=m"(*m)         \
                                    :: );
 
-#define VECTOR_STORES(x, m)    asm("li %%r3, 0;\n\t"               \
+#define VECTOR_STORES(x, m)    asm("li %%r3, 0;\n\t"            \
                                   x("stvx %%v0, %0, %%r3;\n\t") \
                                   :: "r"(m) \
                                   : "%r3", "memory");
@@ -64,15 +64,15 @@
 #elif defined(__aarch64__)
 
 #define SCALAR_STORES(x, m) \
-  asm(x("str x4, %0\n\t") \
-      : "=m"(*m)          \
+  asm(x("str x4, %0\n\t")   \
+      : "=m"(*m)            \
       :: );
 
 #define VECTOR_STORES(x, m)    asm(x("st1 {v0.16b}, %0\n\t") \
                                    :"=m"(*m)                 \
                                    ::);
 
-#define VECTORSTOREarm(index, post_index, vectorreg)            \
+#define VECTORSTOREarm(index, post_index, vectorreg) \
   "st1 {"#vectorreg".16b}, [%["#index"]], %[post_index]\n\t"
 
 #define SCALAR_STORE_WIDTH 8
