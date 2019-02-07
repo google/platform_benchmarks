@@ -22,7 +22,8 @@
 #define RAND_SEED 1220
 #define MAX_LOG_COPYSIZE 31
 
-#ifdef __x86_64__
+#if defined(__x86_64__)
+
 #define STLF_LOOP_CHASE(loopcnt, depth, readloc, startptr, ptr, loadreg) \
   asm("1:\n\t"                                                           \
       "mov %[startpointer], %[pointer]\n\t"                              \

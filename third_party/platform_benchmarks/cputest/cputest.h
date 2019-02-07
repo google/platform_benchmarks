@@ -85,13 +85,13 @@ const struct Test alltests[NUMTESTS] = {
 
   {"--shl_reg_latency Sb",
    1,
-   "Dependent SHL r64, r32=Sb test (GOPS=back-2-back-add-latency*GHz)",
+   "Dependent SHL r64, r32=Sb test (GOPS=back-2-back-shift-latency*GHz)",
    (struct Result (*)())shl_reg_latency
   },
 
   {"--shl_imm_latency Sb",
    1,
-   "Dependent SHL reg, imm=Sb test (Sb=0,1 GOPS=back-2-back-add-latency*GHz)",
+   "Dependent SHL reg, imm=Sb test (Sb=0,1 GOPS=back-2-back-shift-latency*GHz)",
    (struct Result (*)())shl_imm_latency
   },
 

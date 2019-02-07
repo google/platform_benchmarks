@@ -21,11 +21,12 @@
 
 #define LOAD 1
 
-#ifdef __x86_64__
+#if defined(__x86_64__)
+
 // Need to specify destination explicitly
 // Otherwise assembler sets up a pointer chase
 #define SCALAR_LOADS(x, m)    asm(x("mov %0, %%rdx;")   \
-                                  :: "m"(*m)             \
+                                  :: "m"(*m)            \
                                   : "%rdx");
 
 #define VECTOR_LOADS(x, m)    asm(x("vmovapd %0, %%ymm0;") \
@@ -45,16 +46,15 @@
 #define SCALAR_LOAD_WIDTH 8
 #define VECTOR_LOAD_WIDTH 32
 
-
 #elif defined(__ppc64__)
 
 // Need to specify destination explicitly
 // Otherwise assembler sets up a pointer chase
 #define SCALAR_LOADS(x, m)    asm(x("ld %%r4, %0;")  \
-                                  :: "m"(*m) \
+                                  :: "m"(*m)         \
                                   : "%r4");
 
-#define VECTOR_LOADS(x, m)    asm("li %%r3, 0;\n\t"               \
+#define VECTOR_LOADS(x, m)    asm("li %%r3, 0;\n\t"            \
                                   x("lvx %%v0, %0, %%r3;\n\t") \
                                   :: "r"(m) \
                                   : "%v0", "%r3");
@@ -67,15 +67,15 @@
 #elif defined(__aarch64__)
 
 #define SCALAR_LOADS(x, m) \
-  asm(x("ldr x4, %0\n\t") \
-      :: "m"(*m)          \
+  asm(x("ldr x4, %0\n\t")  \
+      :: "m"(*m)           \
       : "%x4");
 
 #define VECTOR_LOADS(x, m)   asm(x("ld1 {v0.16b}, %0\n\t")  \
-                                 ::"m"(*m)              \
+                                 ::"m"(*m)                  \
                                  : "cc");
 
-#define VECTORLOADarm(index, post_index, vectorreg)            \
+#define VECTORLOADarm(index, post_index, vectorreg)         \
   "ld1 {"#vectorreg".16b}, [%["#index"]], %[post_index]\n\t"
 
 #define SCALAR_LOAD_WIDTH 8

@@ -631,7 +631,7 @@ struct Result max_vector_memops_at_footprint(const unsigned load, const unsigned
   // loop through 256 times -- enough to amortize the cost of cold misses.
   uint64_t outerloopcount = logbytes > 16 ? (LOOP1M >> (logbytes - 16)): LOOP1M;
 
-#ifdef __x86_64__
+#if defined(__x86_64__)
 
   // x86 can do 32-bytes per load. To cover bytes you need...
   // bytes / 32 = bytes >> 5 = (1 << (logbytes - 5)) loads

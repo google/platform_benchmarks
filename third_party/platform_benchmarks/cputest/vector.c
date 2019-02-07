@@ -29,7 +29,7 @@ struct Result vector_int_add_latency(const int width) {
   uint64_t t = now_nsec();
   for (i=0; i < LOOP1M; i++) {
     // 1024 back to back dependent vector adds per loop iter;
-    DEPENDENT_VECTOR256_INT_ADDS(x1k);
+    DEPENDENT_VECTOR_INT_ADDS(x1k);
   }
   result.metric = (double)LOOP1M*LOOP1K/(now_nsec()-t);
   sprintf(result.function, "%s(width=%d)", __FUNCTION__, width);
@@ -53,7 +53,7 @@ struct Result max_vector_int_add_bandwidth(const int width) {
   register int i;
   for (i=0; i < LOOP16M; i++) {
     // 1024 adds per loop iter to amortize looping costs
-    DEPENDENT_VECTOR256_INT_ADD_SETS(x128)
+    DEPENDENT_VECTOR_INT_ADD_SETS(x128)
   }
 
   result.metric = (double)LOOP16M*LOOP1K/(now_nsec()-t);

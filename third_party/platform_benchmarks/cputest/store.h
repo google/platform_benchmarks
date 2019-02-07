@@ -21,7 +21,7 @@
 
 #define STORE 0
 
-#ifdef __x86_64__
+#if defined(__x86_64__)
 // Need to specify destination explicitly
 // Otherwise assembler sets up a pointer chase
 #define SCALAR_STORES(x, m)    asm(x("mov %%rdx, %0;")   \
@@ -45,7 +45,6 @@
 #define VECTOR_STORE_WIDTH 32
 
 #elif defined(__ppc64__)
-
 // Need to specify destination explicitly
 // Otherwise assembler sets up a pointer chase
 #define SCALAR_STORES(x, m)    asm(x("std %%r4, %0;")  \
