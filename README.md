@@ -7,7 +7,7 @@ https://github.com/google/platform_benchmarks
 ## What are Platform Benchmark?
 Platform Benchmarks are a benchmark suite to measure basic architectural
 metrics of a platform. Currently it only consists of CPUtest and Analog
-bencmarks.
+benchmarks.
 
 CPUtest is a set of microbenchmarks to measure fundamental micro-architectural
 characteristics of a CPU.

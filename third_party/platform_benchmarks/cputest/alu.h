@@ -93,11 +93,39 @@
       : "r"(r)                                                   \
       : "cc");
 
-#define DEPENDENT_SHL_REG(x, r1, r2) abort();  // PPC TBA
-#define DEPENDENT_SHL_IMM(x, r, imm) abort();  // PPC TBA
-#define DEPENDENT_CMOV_REG(x, r1, r2) abort(); // PPC TBA
-#define MOV_ELIMINATION_SINGLE(a1, a2, count) abort();  // PPC TBA
-#define MOV_ELIMINATION_1K(a1, a2, count) abort();  // PPC TBA
+#define DEPENDENT_SHL_REG(x, r1, count) asm(x("sld %0, %0, %1\n\t") \
+                                         :"+r"(r1)                  \
+                                         :"r"(count):);
+
+#define DEPENDENT_SHL_IMM(x, r, imm) asm(x("sldi %0, %0, "#imm"\n\t") \
+                                         :"+r"(r)::);
+
+// Avoid the advantage of using count register in PPC since we only want to
+// compare move elimination.
+#define MOV_ELIMINATION_SINGLE(a1, a2, count)         \
+  asm(".balign 64\n\t"                                \
+      "1:\n\t"                                        \
+      "add %[r1], %[r1], %[r2]\n\t"                   \
+      "mr %[r2], %[r1]\n\t"                           \
+      "addic. %[count], %[count], -1\n\t"             \
+      "bne 0, 1b\n"                                   \
+      :[count]"+r"(count), [r1]"+r"(a1), [r2]"+r"(a2) \
+      :: "cc");
+
+#define MOV_ELIMINATION_1K(a1, a2, count)                   \
+  asm(".balign 64\n\t"                                      \
+      "1:\n\t"                                              \
+      x1k("add %[r1], %[r1], %[r2]\n\tmr %[r2], %[r1]\n\t") \
+      "addic. %[count], %[count], -1\n\t"                   \
+      "bne 0, 1b\n"                                         \
+      :[count]"+r"(count), [r1]"+r"(a1), [r2]"+r"(a2)       \
+      :: "cc");
+
+#define DEPENDENT_CMOV_REG(x, r1, r2)                         \
+  asm("xor. %0, %0, %0\n\t"                                   \
+      x("iseleq %1, %0, %1\n\tiseleq %0, %1, %0\n\t")         \
+      :"+r"(r1), "+r"(r2)                                     \
+      :: "cc");
 
 #elif defined(__aarch64__)
 

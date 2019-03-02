@@ -47,7 +47,7 @@ struct Result stlf_pointer_chase(const int dependent, const uint32_t normalizedd
   uint64_t t;
   register uint64_t loadregister = 0;
   register uint64_t startp = (uint64_t)m;
-  register uint64_t p;
+  register uint64_t p = 0;
   register uint64_t readlocation = (uint64_t)(dependent?(m+normalizeddepth):m);
   loopcount = LOOP1M;
 
@@ -362,9 +362,9 @@ void avx_default_copy_loop(const register uint64_t outer_loop_count,
 
   assert (log_copy_size > 8);
 
-  register uint64_t outer_loop_index_reg;
-  register uint64_t src_pointer_reg;
-  register uint64_t dst_pointer_reg;
+  register uint64_t outer_loop_index_reg = 0;
+  register uint64_t src_pointer_reg = 0;
+  register uint64_t dst_pointer_reg = 0;
   register uint64_t inner_loop_count = (1 << (log_copy_size - 8));
   register uint64_t inner_loop_index_reg = inner_loop_count;
 

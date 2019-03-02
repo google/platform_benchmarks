@@ -27,39 +27,52 @@
   asm(x("vpaddd %%zmm1, %%zmm2, %%zmm2\n\t") \
       :::"%zmm2");
 
-#define DEPENDENT_VECTOR_INT_ADD_SETS(x)               \
-  asm(x("vpaddd %%zmm0, %%zmm8, %%zmm8\n\t"            \
-        "vpaddd %%zmm1, %%zmm9, %%zmm9\n\t"            \
-        "vpaddd %%zmm2, %%zmm10, %%zmm10\n\t"          \
-        "vpaddd %%zmm3, %%zmm11, %%zmm11\n\t"          \
-        "vpaddd %%zmm4, %%zmm12, %%zmm12\n\t"          \
-        "vpaddd %%zmm5, %%zmm13, %%zmm13\n\t"          \
-        "vpaddd %%zmm6, %%zmm14, %%zmm14\n\t"          \
-        "vpaddd %%zmm7, %%zmm15, %%zmm15\n\t")         \
-        :::"%zmm8", "%zmm9", "%zmm10", "%zmm11", \
+#define DEPENDENT_VECTOR_INT_ADD_SETS(x)          \
+  asm(x("vpaddd %%zmm0, %%zmm8, %%zmm8\n\t"       \
+        "vpaddd %%zmm1, %%zmm9, %%zmm9\n\t"       \
+        "vpaddd %%zmm2, %%zmm10, %%zmm10\n\t"     \
+        "vpaddd %%zmm3, %%zmm11, %%zmm11\n\t"     \
+        "vpaddd %%zmm4, %%zmm12, %%zmm12\n\t"     \
+        "vpaddd %%zmm5, %%zmm13, %%zmm13\n\t"     \
+        "vpaddd %%zmm6, %%zmm14, %%zmm14\n\t"     \
+        "vpaddd %%zmm7, %%zmm15, %%zmm15\n\t")    \
+        :::"%zmm8", "%zmm9", "%zmm10", "%zmm11",  \
          "%zmm12", "%zmm13", "%zmm14", "%zmm15");
 #else
 #define DEPENDENT_VECTOR_INT_ADDS(x)         \
   asm(x("vpaddd %%ymm1, %%ymm2, %%ymm2\n\t") \
       :::"%ymm2");
 
-#define DEPENDENT_VECTOR_INT_ADD_SETS(x)               \
-  asm(x("vpaddd %%ymm0, %%ymm8, %%ymm8\n\t"            \
-        "vpaddd %%ymm1, %%ymm9, %%ymm9\n\t"            \
-        "vpaddd %%ymm2, %%ymm10, %%ymm10\n\t"          \
-        "vpaddd %%ymm3, %%ymm11, %%ymm11\n\t"          \
-        "vpaddd %%ymm4, %%ymm12, %%ymm12\n\t"          \
-        "vpaddd %%ymm5, %%ymm13, %%ymm13\n\t"          \
-        "vpaddd %%ymm6, %%ymm14, %%ymm14\n\t"          \
-        "vpaddd %%ymm7, %%ymm15, %%ymm15\n\t")         \
-        :::"%ymm8", "%ymm9", "%ymm10", "%ymm11", \
+#define DEPENDENT_VECTOR_INT_ADD_SETS(x)          \
+  asm(x("vpaddd %%ymm0, %%ymm8, %%ymm8\n\t"       \
+        "vpaddd %%ymm1, %%ymm9, %%ymm9\n\t"       \
+        "vpaddd %%ymm2, %%ymm10, %%ymm10\n\t"     \
+        "vpaddd %%ymm3, %%ymm11, %%ymm11\n\t"     \
+        "vpaddd %%ymm4, %%ymm12, %%ymm12\n\t"     \
+        "vpaddd %%ymm5, %%ymm13, %%ymm13\n\t"     \
+        "vpaddd %%ymm6, %%ymm14, %%ymm14\n\t"     \
+        "vpaddd %%ymm7, %%ymm15, %%ymm15\n\t")    \
+        :::"%ymm8", "%ymm9", "%ymm10", "%ymm11",  \
          "%ymm12", "%ymm13", "%ymm14", "%ymm15");
 #endif
 
 #elif defined(__ppc64__)
 
-#define DEPENDENT_VECTOR_INT_ADDS(x) abort(); // PPC TBA
-#define DEPENDENT_VECTOR_INT_ADD_SETS(x) abort(); // PPC TBA
+#define DEPENDENT_VECTOR_INT_ADDS(x) \
+  asm(x("vadduwm 0, 0, 0\n\t")       \
+      :::"0");
+
+#define DEPENDENT_VECTOR_INT_ADD_SETS(x) \
+  asm(x("vadduwm 8, 8, 0\n\t"            \
+        "vadduwm 9, 9, 1\n\t"            \
+        "vadduwm 10, 10, 2\n\t"          \
+        "vadduwm 11, 11, 3\n\t"          \
+        "vadduwm 12, 12, 4\n\t"          \
+        "vadduwm 13, 13, 5\n\t"          \
+        "vadduwm 14, 14, 6\n\t"          \
+        "vadduwm 15, 15, 7\n\t")         \
+        :::"8", "9", "10", "11",         \
+         "12", "13", "14", "15");
 
 #elif defined(__aarch64__)
 
