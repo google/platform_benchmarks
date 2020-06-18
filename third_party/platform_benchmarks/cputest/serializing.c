@@ -20,13 +20,16 @@
 struct Result rdtsc() {
   struct Result result;
   uint64_t t = now_nsec();
-#ifdef __x86_64__
   for (int i=0; i < LOOP1M; i++) {
-    asm(x1k("rdtsc\n\t"):::"%rdx","%rax");
-  }
-#endif
-  result.metric = (double)LOOP1M*LOOP1K/(now_nsec()-t);
 #ifdef __x86_64__
+    asm(x1k("rdtsc\n\t"):::"%rdx","%rax");
+#elif defined(__aarch64__)
+    uint64_t tmp;
+    asm(x1k("mrs %0, cntvct_el0\n\t") : "=r" (tmp));
+#endif
+  }
+  result.metric = (double)LOOP1M*LOOP1K/(now_nsec()-t);
+#if defined(__x86_64__) || defined(__aarch64__)
   strcpy(result.function, __FUNCTION__);
 #else
   sprintf(result.function, "%s NOT APPLICABLE on Current Platform", __FUNCTION__);
@@ -39,13 +42,16 @@ struct Result rdtsc() {
 struct Result rdtscp() {
   struct Result result;
   uint64_t t = now_nsec();
-#ifdef __x86_64__
   for (int i=0; i < LOOP1M; i++) {
-    asm(x1k("rdtsc\n\t"):::"%rdx","%rax");
-  }
-#endif
-  result.metric = (double)LOOP1M*LOOP1K/(now_nsec()-t);
 #ifdef __x86_64__
+    asm(x1k("rdtscp\n\t"):::"%rdx","%rax");
+#elif defined(__aarch64__)
+    uint64_t tmp;
+    asm(x1k("isb\n\t mrs %0, cntvct_el0\n\t") : "=r" (tmp));
+#endif
+  }
+  result.metric = (double)LOOP1M*LOOP1K/(now_nsec()-t);
+#if defined(__x86_64__) || defined(__aarch64__)
   strcpy(result.function, __FUNCTION__);
 #else
   sprintf(result.function, "%s NOT APPLICABLE on Current Platform", __FUNCTION__);
