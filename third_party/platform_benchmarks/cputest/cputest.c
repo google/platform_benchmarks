@@ -31,8 +31,11 @@ void helpinfo() {
 
 int main(int argc, char* argv[]) {
   int i;
+  if (argc < 2) {
+    helpinfo();
+  }
   for (i=1; i < argc;) {
-    if (strcmp(argv[i], "--help")==0) {
+    if (strcmp(argv[i], "--help")==0 || strcmp(argv[i], "-h")==0) {
       helpinfo();
       break;
     }
