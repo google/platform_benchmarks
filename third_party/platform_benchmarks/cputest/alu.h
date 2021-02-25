@@ -147,9 +147,9 @@
       : "r"(r)                                                   \
       : "cc");
 
-#define DEPENDENT_SHL_REG(x, r1, count) asm(x("lsl %0, %0, %1\n\t") \
-                                         :"+r"(r1)                  \
-                                         :"r"(count)                \
+#define DEPENDENT_SHL_REG(x, r1, count) asm(x("lsl %0, %0, %x1\n\t") \
+                                         :"+r"(r1)                   \
+                                         :"r"(count)                 \
                                          :"cc");
 
 #define DEPENDENT_SHL_IMM(x, r, imm) asm(x("lsl %0, %0, #"#imm"\n\t") \
@@ -167,7 +167,7 @@
       "1:\n\t"                                        \
       "add %[r1], %[r1], %[r2]\n\t"                   \
       "mov %[r2], %[r1]\n\t"                          \
-      "subs %[count], %[count], #1\n\t"               \
+      "subs %w[count], %w[count], #1\n\t"               \
       "bne 1b\n"                                      \
       :[count]"+r"(count), [r1]"+r"(a1), [r2]"+r"(a2) \
       :: "cc");
@@ -176,7 +176,7 @@
   asm(".balign 64\n\t"                                       \
       "1:\n\t"                                               \
       x1k("add %[r1], %[r1], %[r2]\n\tmov %[r2], %[r1]\n\t") \
-      "subs %[count], %[count], #1\n\t"                      \
+      "subs %w[count], %w[count], #1\n\t"                      \
       "bne 1b\n"                                             \
       :[count]"+r"(count), [r1]"+r"(a1), [r2]"+r"(a2)        \
       :: "cc");
