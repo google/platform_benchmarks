@@ -300,19 +300,19 @@
 #elif defined(__aarch64__)
 
 #define TAKEN_BRANCH_LOOP(loop_count)       \
-  asm("loop_start_takenbranch:\n\t"         \
+  asm(".balign 32\n\t"			                \
+      "loop_start_takenbranch:\n\t"         \
       "sub %0, %0, 1\n\t"                   \
       "cbnz %0, loop_start_takenbranch\n\t" \
       : "+r"(loop_count)                    \
       :: "cc");
 
 #define BRANCH_HISTORY(lc, idx, dm, m, result)                 \
-  asm(".balign 4096\n\t"                                       \
+  asm(".balign 32\n\t"                                         \
       "loop_start_branch_history:\n\t"                         \
       "and %[index], %[depth_mask], %[loop_count]\n\t"         \
-      "lsl x15, %[index], #3\n\t"                              \
-      "add x15, x15, %[mem]\n\t"                               \
-      "ldr x15, [x15, #0]\n\t"                                 \
+      "lsl x15, %[index], #3\n\t"                              \    
+      "ldr x15, [x15, %[mem]]\n\t"                             \
       "cmp x15, #0\n\t"                                        \
       "beq branch_history_there\n\t"                           \
       "add %[x], %[x], %[loop_count]\n\t"                      \
@@ -374,12 +374,16 @@
       "adr %[startreg], loop_start_indirectbranch\n\t"              \
       "adr %[midreg], loop_mid_indirectbranch\n\t"                  \
       "adr %[exitreg], loop_exit_indirectbranch\n\t"                \
+      "nop\n\t"                                                     \
+      "nop\n\t"                                                     \
+      "nop\n\t"                                                     \
+      "nop\n\t"                                                     \
+      "nop\n\t"                                                     \
       "loop_start_indirectbranch:\n\t"                              \
       "nop\n\t"                                                     \
       "loop_mid_indirectbranch:\n\t"                                \
-      "mov %[target_branch], %[startreg]\n\t"                       \
       "tst %[loop_count], #1\n\t"                                   \
-      "csel %[target_branch], %[midreg], %[target_branch], EQ\n\t"  \
+      "csel %[target_branch], %[midreg], %[startreg], EQ\n\t"       \
       "subs %[loop_count], %[loop_count], #1\n\t"                   \
       "csel %[target_branch], %[exitreg], %[target_branch], EQ\n\t" \
       "br %[target_branch]\n\t"                                     \

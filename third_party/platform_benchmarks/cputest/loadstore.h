@@ -50,12 +50,19 @@
 #elif defined(__aarch64__)
 
 #define STLF_LOOP_CHASE(loopcnt, depth, readloc, startptr, ptr, loadreg) \
-  for (; loopcnt > 0; loopcnt--) {                                       \
-    ptr = startptr;                                                      \
-    x##depth(ptr = *((uint64_t *)ptr);)                                  \
-    *((uint64_t *)ptr) = loopcnt;                                        \
-    loadreg += *((uint64_t *)readloc);                                   \
-  }
+  asm ("1:\n\t"                                                          \
+        "mov %[p], %[startp]\n\t"                                        \
+        x##depth("ldr %[p], [ %[p] ]\n\t")                               \
+        "str %[loopcount], [ %[p] ]\n\t"                                 \
+        "ldr x6, [ %[readlocation] ]\n\t"                                \
+        "add %[loadregister], %[loadregister], x6\n\t"                   \
+        "subs %[loopcount], %[loopcount], #1\n\t"                        \
+        "bne 1b\n"                                                       \
+        :[loopcount]"+r"(loopcnt), [loadregister]"+r"(loadreg),          \
+        [p]"+r"(ptr), [startp]"+r"(startptr)                             \
+        :[readlocation]"r"(readloc)                                      \
+        :"%x6", "cc");
+
 #endif
 
 #define AVX_32BYTE_COPY_LOOP(loop_counter,            \
